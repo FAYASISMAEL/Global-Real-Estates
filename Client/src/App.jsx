@@ -1,22 +1,39 @@
 import React from 'react';
-import { useState } from 'react';
-import { BrowserRouter,Route,Router,Routes, useLocation} from 'react-router-dom';
-
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { PropertyProvider } from './components/Context/PropertyContext';
 import Navbar from './components/Navbar/Navbar';
 import Home from './components/Home/Home';
-import Login from './components/Auth/Login/Login';
+import Post from './components/Post/Post';
+import Preview from './components/Preview/Preview';
+import Profile from './components/Profile/Profile';
+import EditProperty from './components/EditProperty/EditProperty';
+import Explore from './components/Explore/Explore';
+import Wishlist from './components/Wishlist/Wishlist';
 
-function App() {
-  const location = useLocation()
+const App = () => {
+  const location = useLocation();
+
+  const hideNavbar = location.pathname.startsWith('/preview') || location.pathname === '/post' || location.pathname === '/wishlist' || location.pathname === '/profile' || location.pathname === '/explore' || location.pathname.startsWith('/edit');
+
   return (
-    <>
-    {location.pathname === "/login" ? "" : <Navbar/>}
-    <Routes>
-      <Route path='/' element = {<Home/>} />
-      <Route path="/login" element = {<Login />} />
-    </Routes>
-    </>
-  )
-}
+    <PropertyProvider>
+      <div>
+        {!hideNavbar && <Navbar />}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/post" element={<Post />} />
+          <Route path="/preview/:id" element={<Preview />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/edit/:id" element={<EditProperty />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/wishlist" element={<Wishlist />} />
+        </Routes>
+      </div>
+    </PropertyProvider>
+  );
+};
 
-export default App
+export default App;
+
+
+//       <Route path="/preview/:id" element={<Preview />} />

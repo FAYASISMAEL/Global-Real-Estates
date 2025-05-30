@@ -11,16 +11,17 @@ const onRedirectCallback = (appState) => {
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter >
-<Auth0Provider
+< Auth0Provider
     domain="dev-lxi2vw3wbdo4kdcp.us.auth0.com"
     clientId="n2Z6qcKT4lYv5f8q23uCVuZdhHLFSypt"
-    authorizationParams={{
-      redirect_uri: window.location.origin
-    }}
+    authorizationParams={{redirect_uri: window.location.origin}}
+    useRefreshTokens={true}
+    cacheLocation='localstorage'
+    onRedirectCallback={onRedirectCallback}
   >
+  <BrowserRouter >
     <App />
-  </Auth0Provider>,
   </BrowserRouter>
+  </Auth0Provider>,
   </StrictMode>,
 )

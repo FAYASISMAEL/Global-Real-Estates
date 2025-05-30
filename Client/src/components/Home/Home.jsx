@@ -1,36 +1,110 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useProperty } from '../Context/PropertyContext';
+import BlurText from "../Reactbits/BlurText/BlurText";
+
+const handleAnimationComplete = () => {};
 
 const Home = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("Buy");
+  const { properties, fetchProperties } = useProperty();
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState({
-    location: "",
+    location: "All India",
     propertyType: "",
     priceRange: "",
+    listingType: ""
   });
 
-  const tabs = ["Buy"];
+  useEffect(() => {
+    const loadProperties = async () => {
+      setLoading(true);
+      await fetchProperties();
+      setLoading(false);
+    };
 
-  const handleSearch = () => {
-    console.log("Search Query:", searchQuery);
-    navigate(`/property?location=${searchQuery.location}&type=${searchQuery.propertyType}&price=${searchQuery.priceRange}`);
+    loadProperties();
+  }, [fetchProperties]);
+
+  const handleFilterChange = (field, value) => {
+    setSearchQuery(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
+
+  const handleResetFilters = () => {
+    setSearchQuery({
+      location: "All India",
+      propertyType: "",
+      priceRange: "",
+      listingType: ""
+    });
+  };
+
+  const filterProperties = () => {
+    return properties.filter(property => {
+      const locationMatch = searchQuery.location === "All India" || property.location === searchQuery.location;
+
+      const typeMatch = !searchQuery.propertyType || property.propertyType === searchQuery.propertyType;
+
+      const listingMatch = !searchQuery.listingType || property.listingType === searchQuery.listingType;
+
+      let priceMatch = true;
+      if (searchQuery.priceRange) {
+        const price = parseFloat(property.price);
+        switch (searchQuery.priceRange) {
+          case 'Below ₹50L':
+            priceMatch = price < 50;
+            break;
+          case '₹50L - ₹1Cr':
+            priceMatch = price >= 50 && price <= 100;
+            break;
+          case 'Above ₹1Cr':
+            priceMatch = price > 100;
+            break;
+          default:
+            priceMatch = true;
+        }
+      }
+
+      return locationMatch && typeMatch && priceMatch && listingMatch;
+    });
+  };
+
+  const filteredProperties = filterProperties();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading properties...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="font-sans">
-      <section
-        className="bg-cover bg-center h-[70vh] text-white flex items-center relative bg-[url(/homebg2.jpg)]"
-      >
+      <section className="bg-cover bg-center h-[70vh] text-white flex items-center relative bg-[url(/homebg2.jpg)]">
         <div className="w-full h-full flex items-center bg-black/40">
           <div className="max-w-5xl mx-auto px-6 text-left">
-            <h1 className="text-4xl md:text-6xl font-bold leading-tight text-white drop-shadow-md">
-              Global Estates
-            </h1>
+            <BlurText
+              text="Global Real Estate"
+              delay={150}
+              animateBy="words"
+              direction="top"
+              onAnimationComplete={handleAnimationComplete}
+              className="text-4xl md:text-6xl font-bold leading-tight text-white drop-shadow-md"
+            />
             <p className="mt-2 text-lg md:text-xl text-white drop-shadow-md animation-delay-200">
               Urban Luxury Meets Nature
             </p>
-            <button onClick={() => navigate("/property")} className="mt-6 inline-block bg-transparent border hover:bg-blue-700 cursor-pointer text-white px-10 py-3 rounded text-lg transition animation-delay-600">
+            <button
+              onClick={() => navigate("/explore")}
+              className="mt-6 inline-block bg-transparent border hover:bg-blue-700 cursor-pointer text-white px-10 py-3 rounded text-lg transition animation-delay-600"
+            >
               Explore Now
             </button>
           </div>
@@ -38,52 +112,106 @@ const Home = () => {
       </section>
 
       <section className="bg-white py-8 shadow-md -mt-16 relative z-10 rounded-md max-w-6xl mx-auto px-6">
-        <div className="flex space-x-4 border-b mb-4">
-          {tabs.map((tab) => (
-            <button key={tab} className={`pb-2 ${
-                activeTab === tab
-                  ? "border-b-2 border-blue-600 text-blue-600 cursor-pointer"
-                  : "text-black"
-              }`}
-              onClick={() => setActiveTab(tab)}
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <select
+              className="border px-4 py-2 rounded w-full cursor-pointer"
+              value={searchQuery.listingType}
+              onChange={(e) => handleFilterChange('listingType', e.target.value)}
             >
-              {tab}
+              <option value="">All Listing Types</option>
+              <option value="rent">For Rent</option>
+              <option value="buy">For Sale</option>
+            </select>
+
+            <select
+              className="border px-4 py-2 rounded w-full cursor-pointer"
+              value={searchQuery.location}
+              onChange={(e) => handleFilterChange('location', e.target.value)}
+            >
+              <option value="All India">All India</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Kerala">Kerala</option>
+            </select>
+
+            <select
+              className="border px-4 py-2 rounded w-full cursor-pointer"
+              value={searchQuery.propertyType}
+              onChange={(e) => handleFilterChange('propertyType', e.target.value)}
+            >
+              <option value="">All Property Types</option>
+              <option value="Apartment">Apartment</option>
+              <option value="Villa">Villa</option>
+              <option value="Plot">Plot</option>
+            </select>
+
+            <select
+              className="border px-4 py-2 rounded w-full cursor-pointer"
+              value={searchQuery.priceRange}
+              onChange={(e) => handleFilterChange('priceRange', e.target.value)}
+            >
+              <option value="">All Price Ranges</option>
+              <option value="Below ₹50L">Below ₹50L</option>
+              <option value="₹50L - ₹1Cr">₹50L - ₹1Cr</option>
+              <option value="Above ₹1Cr">Above ₹1Cr</option>
+            </select>
+
+            <button
+              onClick={handleResetFilters}
+              className="border px-4 py-2 rounded w-full cursor-pointer bg-gray-100 hover:bg-gray-200 transition"
+            >
+              Reset Filters
             </button>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <input type="text" placeholder="Search by city or area" className="border px-4 py-2 rounded w-full" value={searchQuery.location}
-            onChange={(e) =>
-              setSearchQuery({ ...searchQuery, location: e.target.value })
-            }
-          />
-          <select
-            className="border px-4 py-2 rounded w-full cursor-pointer"
-            value={searchQuery.propertyType}
-            onChange={(e) =>
-              setSearchQuery({ ...searchQuery, propertyType: e.target.value })
-            }
-          >
-            <option value="">Property Type</option>
-            <option>Apartment</option>
-            <option>Villa</option>
-            <option>Plot</option>
-          </select>
-          <select
-            className="border px-4 py-2 rounded w-full cursor-pointer"
-            value={searchQuery.priceRange}
-            onChange={(e) =>
-              setSearchQuery({ ...searchQuery, priceRange: e.target.value })
-            }
-          >
-            <option value="">Price Range</option>
-            <option>Below ₹50L</option>
-            <option>₹50L - ₹1Cr</option>
-            <option>Above ₹1Cr</option>
-          </select>
-          <button className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition">
-            Search
-          </button>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {searchQuery.listingType && (
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+                🏠 {searchQuery.listingType === 'rent' ? 'For Rent' : 'For Sale'}
+                <button
+                  onClick={() => handleFilterChange('listingType', '')}
+                  className="ml-2 text-blue-600 hover:text-blue-800"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {searchQuery.location !== "All India" && (
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+                📍 {searchQuery.location}
+                <button
+                  onClick={() => handleFilterChange('location', 'All India')}
+                  className="ml-2 text-blue-600 hover:text-blue-800"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {searchQuery.propertyType && (
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+                🏢 {searchQuery.propertyType}
+                <button
+                  onClick={() => handleFilterChange('propertyType', '')}
+                  className="ml-2 text-blue-600 hover:text-blue-800"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {searchQuery.priceRange && (
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+                💰 {searchQuery.priceRange}
+                <button
+                  onClick={() => handleFilterChange('priceRange', '')}
+                  className="ml-2 text-blue-600 hover:text-blue-800"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -92,36 +220,78 @@ const Home = () => {
           <h2 className="text-3xl font-bold mb-8 text-center">
             Featured Properties
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { id: 1, title: "3BHK Apartment in Bangalore", price: "₹75L", details: "1,200 sqft • Whitefield" },
-              { id: 2, title: "2BHK Villa in Mumbai", price: "₹1.2Cr", details: "1,500 sqft • Andheri" },
-              { id: 3, title: "Plot in Delhi", price: "₹50L", details: "800 sqft • Dwarka" },
-            ].map((property) => (
-              <div
-                key={property.id}
-                className="bg-white shadow rounded overflow-hidden hover:shadow-lg transition"
+          {filteredProperties.length === 0 ? (
+            <div className="text-center">
+              <p className="text-gray-600 mb-4">No properties found matching your criteria.</p>
+              <button 
+                onClick={handleResetFilters}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
-                <img
-                  src={`https://townsquare.media/site/717/files/2020/04/featured-image-option-2.jpg?w=780&q=75${property.id}`}
-                  alt={property.title}
-                  className="w-full h-52 object-cover cursor-pointer"
-                />
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold">{property.title}</h3>
-                  <p className="text-gray-600 text-sm mt-1">
-                    {property.price} • {property.details}
-                  </p>
-                  <button
-                    onClick={() => navigate(`/property/${property.id}`)}
-                    className="text-blue-600 mt-3 inline-block hover:underline"
-                  >
-                    View Details
-                  </button>
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {filteredProperties.map((property) => (
+                <div
+                  key={property._id}
+                  className="bg-white shadow rounded overflow-hidden hover:shadow-lg transition cursor-pointer"
+                  onClick={() => navigate(`/preview/${property._id}`)}
+                >
+                  <div className="relative">
+                    <img
+                      src={property.images && property.images.length > 0 
+                        ? `http://localhost:5000${property.images[0].startsWith('/') ? property.images[0] : `/${property.images[0]}`}`
+                        : '/placeholder-property.jpg'}
+                      alt={property.title}
+                      className="w-full h-52 object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/placeholder-property.jpg';
+                      }}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                      <p className="text-white font-semibold text-lg">{property.priceString}</p>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <div className="mb-3">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-1">{property.title}</h3>
+                      <p className="text-gray-600 text-sm">{property.location}</p>
+                    </div>
+
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                        {property.propertyType}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        property.listingType === 'rent' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-purple-100 text-purple-800'
+                      }`}>
+                        {property.listingType === 'rent' ? 'For Rent' : 'For Sale'}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-sm text-gray-500">
+                      <div className="text-center p-2 bg-gray-50 rounded">
+                        <p className="font-medium">{property.size}</p>
+                        <p className="text-xs">sqft</p>
+                      </div>
+                      <div className="text-center p-2 bg-gray-50 rounded">
+                        <p className="font-medium">{property.bedrooms}</p>
+                        <p className="text-xs">Beds</p>
+                      </div>
+                      <div className="text-center p-2 bg-gray-50 rounded">
+                        <p className="font-medium">{property.bathrooms}</p>
+                        <p className="text-xs">Baths</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -158,8 +328,8 @@ const Home = () => {
             List your property and get visibility from thousands of buyers.
           </p>
           <button
-            onClick={() => navigate("/post-property")}
-            className="bg-white text-blue-600 font-semibold px-6 py-3 rounded hover:bg-gray-200 transition"
+            onClick={() => navigate("/post")}
+            className="bg-white text-blue-600 font-semibold px-6 py-3 rounded hover:bg-gray-200 cursor-pointer transition"
           >
             Post Your Property
           </button>

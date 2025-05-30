@@ -3,6 +3,7 @@ import cors from 'cors';
 import { connectDB } from './connection.js';
 import propertyRoutes from './Router/data_routes.js';
 import premiumRoutes from './Router/premium_routes.js';
+import adminRoutes from './Router/admin_routes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -26,26 +27,38 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use('/images', express.static(imagesDir));
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+// Routes
+app.use('/api', propertyRoutes);
+app.use('/api/premium', premiumRoutes);
+app.use('/api/admin', adminRoutes);
+
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ error: err.message || 'Something went wrong!' });
+});
+
 const initializeServer = async () => {
-  const dbConnected = await connectDB();
-  if (!dbConnected) {
-    console.log('Warning: Server starting without MongoDB connection');
+  try {
+    console.log('Starting server...');
+    const dbConnected = await connectDB();
+    if (!dbConnected) {
+      console.log('Warning: Server starting without MongoDB connection');
+    } else {
+      console.log('Successfully connected to MongoDB');
+    }
+
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+      console.log(`API endpoints available at http://localhost:${PORT}/api`);
+    });
+  } catch (err) {
+    console.error('Failed to start server:', err);
   }
-
-  app.use('/api', propertyRoutes);
-  app.use('/api/premium', premiumRoutes);
-
-  app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
-  });
-
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`API endpoints available at http://localhost:${PORT}/api`);
-  });
 };
 
-initializeServer().catch(err => {
-  console.error('Failed to start server:', err);
-});
+initializeServer();

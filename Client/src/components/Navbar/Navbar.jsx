@@ -5,10 +5,7 @@ import Login from "../Auth/Login/Login";
 import Logout from "../Auth/Logout/Logout";
 
 const Navbar = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
-  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = React.useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = React.useState(false);
-  const [selectedLocation, setSelectedLocation] = React.useState("All India");
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth0();
 
@@ -18,57 +15,15 @@ const Navbar = () => {
     }
   }, [isAuthenticated, user]);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  const toggleLocationDropdown = () => {
-    setIsLocationDropdownOpen(!isLocationDropdownOpen);
-  };
-
-  const handleLocationSelect = (location) => {
-    setSelectedLocation(location);
-    setIsLocationDropdownOpen(false);
-  };
-
-  const locations = ["All India", "Mumbai", "Delhi", "Bangalore", "Kerala"];
-
   return (
     <nav className="flex justify-between items-center p-4 bg-transparent absolute w-full z-20">
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center">
         <div onClick={() => navigate("/")}>
           <img
             className="h-25 cursor-pointer"
             src="/Global_real_estate-logo.png"
             alt="Logo"
           />
-        </div>
-
-        <div className="relative">
-          <button
-            className="border rounded p-1 text-white bg-transparent border-white drop-shadow-md flex"
-            onClick={toggleLocationDropdown}
-            aria-label="Select location"
-          >
-            {selectedLocation}
-            <span className="ml-2">▼</span>
-          </button>
-          {isLocationDropdownOpen && (
-            <div className="absolute top-10 left-0 bg-white rounded border shadow-lg w-36 z-10">
-              <ul className="py-2">
-                {locations.map((location) => (
-                  <li key={location}>
-                    <button
-                      className="w-full text-left px-4 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                      onClick={() => handleLocationSelect(location)}
-                    >
-                      {location}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </div>
 

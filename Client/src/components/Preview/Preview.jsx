@@ -325,7 +325,7 @@ const Preview = () => {
                 ) : (
                   property.status === "active" && (
                     <button
-                      className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center"
+                      className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition flex items-center cursor-pointer justify-center"
                       onClick={handleContactAgent}
                     >
                       <span className="mr-2">📱</span> Contact Seller
@@ -340,16 +340,14 @@ const Preview = () => {
                         isInWishlist
                           ? 'bg-white hover:text-black'
                           : 'bg-white hover:bg-gray-50 border border-gray-300'
-                      } text-${isInWishlist ? 'black' : 'gray-800'} px-6 py-3 rounded-lg border border-gray-300 transition flex items-center justify-center`}
+                      } text-${isInWishlist ? 'black' : 'gray-800'} px-6 py-3 rounded-lg border border-gray-300 transition flex items-center cursor-pointer justify-center`}
                       onClick={handleSaveToWishlist}
                       disabled={savingToWishlist}
                     >
                       <span className="mr-2">{isInWishlist ? '🚫' : '🛒'}</span>
                       {savingToWishlist
-                        ? 'Processing...'
-                        : isInWishlist
-                        ? 'Remove from Wishlist'
-                        : 'Add to Wishlist'}
+                        ? 'Processing...' : isInWishlist
+                        ? 'Remove from Wishlist' : 'Add to Wishlist'}
                     </button>
                   ) : null
                 ) : (
@@ -376,7 +374,14 @@ const Preview = () => {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="mb-2"><span className="font-semibold">Name:</span> {property.contactName}</p>
                 <p className="mb-2"><span className="font-semibold">Email:</span> {property.contactEmail}</p>
-                <p><span className="font-semibold">Phone:</span> {property.contactPhone}</p>
+                <p className="mb-4"><span className="font-semibold">Phone:</span> {property.contactPhone}</p>
+                <button
+                  onClick={() => window.open('https://zoom.us/j/9832523173', '_blank')}
+                  className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition flex items-center justify-center"
+                >
+                  <span className="mr-2"></span>
+                  {isAuthenticated && user?.email === property.userEmail ? 'Connect with Buyer in Zoom Meeting' : 'Connect with Seller in Zoom Meeting'}
+                </button>
               </div>
             </div>
           </div>

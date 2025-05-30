@@ -92,7 +92,7 @@ const Home = () => {
           <div className="max-w-5xl mx-auto px-6 text-left">
             <BlurText
               text="Global Real Estate"
-              delay={150}
+              delay={220}
               animateBy="words"
               direction="top"
               onAnimationComplete={handleAnimationComplete}
@@ -103,7 +103,7 @@ const Home = () => {
             </p>
             <button
               onClick={() => navigate("/explore")}
-              className="mt-6 inline-block bg-transparent border hover:bg-blue-700 cursor-pointer text-white px-10 py-3 rounded text-lg transition animation-delay-600"
+              className="mt-6 inline-block bg-transparent border hover:bg-white hover:text-black hover:border-white cursor-pointer text-white px-10 py-3 rounded text-lg transition animation-delay-600"
             >
               Explore Now
             </button>
@@ -114,15 +114,6 @@ const Home = () => {
       <section className="bg-white py-8 shadow-md -mt-16 relative z-10 rounded-md max-w-6xl mx-auto px-6">
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <select
-              className="border px-4 py-2 rounded w-full cursor-pointer"
-              value={searchQuery.listingType}
-              onChange={(e) => handleFilterChange('listingType', e.target.value)}
-            >
-              <option value="">All Listing Types</option>
-              <option value="rent">For Rent</option>
-              <option value="buy">For Sale</option>
-            </select>
 
             <select
               className="border px-4 py-2 rounded w-full cursor-pointer"
@@ -134,6 +125,16 @@ const Home = () => {
               <option value="Delhi">Delhi</option>
               <option value="Bangalore">Bangalore</option>
               <option value="Kerala">Kerala</option>
+            </select>
+
+            <select
+              className="border px-4 py-2 rounded w-full cursor-pointer"
+              value={searchQuery.listingType}
+              onChange={(e) => handleFilterChange('listingType', e.target.value)}
+            >
+              <option value="">All Listing Types</option>
+              <option value="buy">Buy</option>
+              <option value="rent">Rent</option>
             </select>
 
             <select
@@ -169,7 +170,7 @@ const Home = () => {
           <div className="flex flex-wrap gap-2">
             {searchQuery.listingType && (
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
-                🏠 {searchQuery.listingType === 'rent' ? 'For Rent' : 'For Sale'}
+                {searchQuery.listingType === 'rent' ? 'For Rent' : 'For Sale'}
                 <button
                   onClick={() => handleFilterChange('listingType', '')}
                   className="ml-2 text-blue-600 hover:text-blue-800"
@@ -180,7 +181,7 @@ const Home = () => {
             )}
             {searchQuery.location !== "All India" && (
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
-                📍 {searchQuery.location}
+                {searchQuery.location}
                 <button
                   onClick={() => handleFilterChange('location', 'All India')}
                   className="ml-2 text-blue-600 hover:text-blue-800"
@@ -191,7 +192,7 @@ const Home = () => {
             )}
             {searchQuery.propertyType && (
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
-                🏢 {searchQuery.propertyType}
+                {searchQuery.propertyType}
                 <button
                   onClick={() => handleFilterChange('propertyType', '')}
                   className="ml-2 text-blue-600 hover:text-blue-800"
@@ -202,7 +203,7 @@ const Home = () => {
             )}
             {searchQuery.priceRange && (
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
-                💰 {searchQuery.priceRange}
+                {searchQuery.priceRange}
                 <button
                   onClick={() => handleFilterChange('priceRange', '')}
                   className="ml-2 text-blue-600 hover:text-blue-800"

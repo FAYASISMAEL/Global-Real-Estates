@@ -101,7 +101,7 @@ const PremiumModal = ({ isOpen, onClose, onSuccess }) => {
             <li>Priority customer support</li>
           </ul>
           <div className="mt-4 text-2xl font-bold text-blue-600">
-            ₹999/month
+            ₹299/month
           </div>
         </div>
 

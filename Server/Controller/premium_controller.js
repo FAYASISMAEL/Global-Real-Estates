@@ -1,4 +1,4 @@
-import { User } from '../connection.js';
+import User from '../Model/user_model.js';
 import PremiumTransaction from '../Models/premium.js';
 import crypto from 'crypto';
 

@@ -1,4 +1,5 @@
-import { Property, User } from "../connection.js";
+import Property from "../Model/property_model.js";
+import User from "../Model/user_model.js";
 import Wishlist from '../Models/wishlist.js';
 import fs from 'fs';
 import path from 'path';

@@ -10,7 +10,7 @@ const Explore = () => {
     location: "All India",
     propertyType: "",
     priceRange: "",
-    sortBy: "newest"
+    listingType: ""
   });
 
   useEffect(() => {
@@ -27,6 +27,9 @@ const Explore = () => {
       }
       if (filters.propertyType) {
         queryParams.append('propertyType', filters.propertyType);
+      }
+      if (filters.listingType) {
+        queryParams.append('listingType', filters.listingType);
       }
       if (filters.priceRange) {
         switch (filters.priceRange) {
@@ -84,7 +87,7 @@ const Explore = () => {
       location: "All India",
       propertyType: "",
       priceRange: "",
-      sortBy: "newest"
+      listingType: ""
     });
   };
 
@@ -100,6 +103,7 @@ const Explore = () => {
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+
             <select
               className="border px-4 py-2 rounded w-full cursor-pointer"
               value={filters.location}
@@ -110,6 +114,16 @@ const Explore = () => {
               <option value="Delhi">Delhi</option>
               <option value="Bangalore">Bangalore</option>
               <option value="Kerala">Kerala</option>
+            </select>
+
+            <select
+              className="border px-4 py-2 rounded w-full cursor-pointer"
+              value={filters.listingType}
+              onChange={(e) => handleFilterChange('listingType', e.target.value)}
+            >
+              <option value="">All Listing Types</option>
+              <option value="rent">Rent</option>
+              <option value="buy">Buy</option>
             </select>
 
             <select
@@ -128,20 +142,10 @@ const Explore = () => {
               value={filters.priceRange}
               onChange={(e) => handleFilterChange('priceRange', e.target.value)}
             >
-              <option value="">All Price Ranges</option>
+              <option value="">All Price Ranges </option>
               <option value="Below ₹50L">Below ₹50L</option>
               <option value="₹50L - ₹1Cr">₹50L - ₹1Cr</option>
               <option value="Above ₹1Cr">Above ₹1Cr</option>
-            </select>
-
-            <select
-              className="border px-4 py-2 rounded w-full cursor-pointer"
-              value={filters.sortBy}
-              onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-            >
-              <option value="newest">Newest First</option>
-              <option value="price-low-high">Price: Low to High</option>
-              <option value="price-high-low">Price: High to Low</option>
             </select>
 
             <button
@@ -155,7 +159,7 @@ const Explore = () => {
           <div className="flex flex-wrap gap-2 mt-4">
             {filters.location !== "All India" && (
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
-                📍 {filters.location}
+                {filters.location}
                 <button
                   onClick={() => handleFilterChange('location', 'All India')}
                   className="ml-2 text-blue-600 hover:text-blue-800"
@@ -166,7 +170,7 @@ const Explore = () => {
             )}
             {filters.propertyType && (
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
-                🏠 {filters.propertyType}
+                {filters.propertyType}
                 <button
                   onClick={() => handleFilterChange('propertyType', '')}
                   className="ml-2 text-blue-600 hover:text-blue-800"
@@ -177,9 +181,20 @@ const Explore = () => {
             )}
             {filters.priceRange && (
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
-                💰 {filters.priceRange}
+                {filters.priceRange}
                 <button
                   onClick={() => handleFilterChange('priceRange', '')}
+                  className="ml-2 text-blue-600 hover:text-blue-800"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {filters.listingType && (
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+                {filters.listingType === 'rent' ? 'For Rent' : 'For Sale'}
+                <button
+                  onClick={() => handleFilterChange('listingType', '')}
                   className="ml-2 text-blue-600 hover:text-blue-800"
                 >
                   ×
